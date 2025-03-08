@@ -25,19 +25,24 @@ public class AddressBookService {
     }
 
     public AddressBook createContact(AddressBookDTO addressBookDTO) {
-        AddressBook contact = new AddressBook();
-        contact.setName(addressBookDTO.getName());
-        contact.setPhoneNumber(addressBookDTO.getPhoneNumber());
-        return repository.save(contact);
+        return repository.save(convertDtoToEntity(addressBookDTO));
     }
 
     public Optional<AddressBook> updateContact(Long id, AddressBookDTO addressBookDTO) {
-        return repository.findById(id).map(contact -> {
-            contact.setName(addressBookDTO.getName());
-            contact.setPhoneNumber(addressBookDTO.getPhoneNumber());
-            return repository.save(contact);
+        return repository.findById(id).map(existingContact -> {
+            // Update existing contact with new data
+            existingContact.setFullname(addressBookDTO.getFullname());
+            existingContact.setAddress(addressBookDTO.getAddress());
+            existingContact.setCity(addressBookDTO.getCity());
+            existingContact.setState(addressBookDTO.getState());
+            existingContact.setZipCode(addressBookDTO.getZipCode());
+            existingContact.setPhoneNumber(addressBookDTO.getPhoneNumber());
+
+            // Save and return the updated entity
+            return repository.save(existingContact);
         });
     }
+
 
     public boolean deleteContact(Long id) {
         if (repository.existsById(id)) {
@@ -46,5 +51,17 @@ public class AddressBookService {
         }
         return false;
     }
+    public AddressBook convertDtoToEntity(AddressBookDTO dto) {
+        AddressBook addressBook = new AddressBook();
+        addressBook.setFullname(dto.getFullname());
+        addressBook.setAddress(dto.getAddress());
+        addressBook.setCity(dto.getCity());
+        addressBook.setState(dto.getState());
+        addressBook.setZipCode(dto.getZipCode());
+        addressBook.setPhoneNumber(dto.getPhoneNumber());
+        return addressBook;
+    }
+
+
 }
 
